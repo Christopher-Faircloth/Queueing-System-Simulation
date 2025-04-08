@@ -4,16 +4,17 @@ from schedulers.fifo import FIFOScheduler  # Example, use other schedulers too
 from job import Job
 
 class Simulation:
-    def __init__(self, scheduler, num_jobs=1000, arrival_rate=1.0):
+    def __init__(self, scheduler, num_jobs=1000, arrival_rate=1.0, service_rate=1.0):
         self.scheduler = scheduler
         self.num_jobs = num_jobs
         self.arrival_rate = arrival_rate
+        self.service_rate = service_rate
         self.jobs = []
         self.results = []
 
     def generate_jobs(self):
         arrival_times = np.cumsum(np.random.exponential(1/self.arrival_rate, self.num_jobs))
-        service_times = np.random.exponential(scale=2.0, size=self.num_jobs)  # Adjust as needed
+        service_times = np.random.exponential(1/self.service_rate, size=self.num_jobs)
         self.jobs = [Job(i, arrival_times[i], service_times[i]) for i in range(self.num_jobs)]
 
     def run(self):
@@ -32,7 +33,8 @@ class Simulation:
                 "arrival_time": job.arrival_time,
                 "start_time": job.start_time,
                 "finish_time": job.finish_time,
-                "waiting_time": job.start_time - job.arrival_time
+                "waiting_time": job.start_time - job.arrival_time,
+                "service_time": job.service_time
             })
 
     def analyze_results(self):
